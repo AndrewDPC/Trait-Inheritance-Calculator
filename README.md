@@ -10,7 +10,7 @@ This project is a Punnett square generator with a graphical user interface (GUI)
   Supports monohybrid (1 trait) and dihybrid (2 traits) Punnett squares.
 
 - **Trait Selection**  
-  Choose from 14 different Mendelian traits such as:
+  Choose from more than 10 different Mendelian traits such as:
   - Eye Color
   - Hair Type
   - Dimples
