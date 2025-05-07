@@ -1,6 +1,6 @@
 # Genetic Trait Punnett Square Visualizer
 
-This project is a Punnett square generator with a graphical user interface (GUI) that simulates genetic inheritance based on user inputs. It allows users to explore the probabilities of inherited traits by generating a Punnett square based on the genetic input of two parents. The program can visualize the results with a color-coded grid and show phenotype and genotype percentages and ratios.
+This project is a Punnett square generator with a graphical user interface that simulates genetic inheritance based on user inputs. It allows users to explore the probabilities of inherited traits by generating a Punnett square based on the genetic input of two parents. The program can visualize the results with a color-coded grid and show phenotype and genotype percentages and ratios.
 
 ---
 
@@ -21,7 +21,6 @@ This project is a Punnett square generator with a graphical user interface (GUI)
   - Handedness
   - Chin Cleft
   - Freckles
-  - PTC Tasting
   - Albinism
   - Lactose Intolerance
 
