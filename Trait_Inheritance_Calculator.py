@@ -49,10 +49,6 @@ TRAITS = {
         "dominant": "C", "recessive": "c",
         "dominant_trait": "Cleft Chin", "recessive_trait": "No Cleft"
     },
-    "PTC Tasting": {
-        "dominant": "T", "recessive": "t",
-        "dominant_trait": "Can Taste PTC", "recessive_trait": "Cannot Taste PTC"
-    },
     "Albinism": {
         "dominant": "A", "recessive": "a",
         "dominant_trait": "Normal Pigmentation", "recessive_trait": "Albinism"
@@ -80,8 +76,8 @@ def GetGametes(genotype):
 def GenerateGenotypeCombinations(parent1, parent2):
     
     #Get gametes for each parent
-    parent1_gametes = GetGametes(parent1)
-    parent2_gametes = GetGametes(parent2)
+    parent1Gametes = GetGametes(parent1)
+    parent2Gametes = GetGametes(parent2)
     
     #Use Cartesian product: combine each gamete from parent 1 with each from parent 2
     #This forms all possible offspring genotypes (i.e., the full Punnett square)
@@ -89,20 +85,20 @@ def GenerateGenotypeCombinations(parent1, parent2):
     #Thsi will store all offspring combinations
     square = []
     #1 trait = 2 letters (e.g., Bb)
-    num_traits = len(parent1) // 2  
+    numTraits = len(parent1) // 2  
 
     #Combine each pair of gametes to form offspring genotypes
-    for g1 in parent1_gametes:
-        for g2 in parent2_gametes:
+    for g1 in parent1Gametes:
+        for g2 in parent2Gametes:
             offspring = ''
-            for i in range(num_traits):
-                gene_pair = g1[i] + g2[i]
+            for i in range(numTraits):
+                genePair = g1[i] + g2[i]
                 #Make uppercase (dominant) allele come first if needed
-                if gene_pair[0].islower() and gene_pair[1].isupper():
-                    gene_pair = gene_pair[1] + gene_pair[0]
-                offspring += gene_pair
+                if genePair[0].islower() and genePair[1].isupper():
+                    genePair = genePair[1] + genePair[0]
+                offspring += genePair
             square.append(offspring)
-    return square, parent1_gametes, parent2_gametes
+    return square, parent1Gametes, parent2Gametes
 
 #Generates a Punnett square based on user input for traits and parent genotypes.
 #Handles both monohybrid and dihybrid crosses, validates the input,
@@ -127,10 +123,10 @@ def GeneratePunnetSquare():
         dominant2 = recessive2 = None
 
     #Expect 2 alleles (monohybrid) or 4 alleles (dihybrid)
-    expected_length = 4 if dihybridMode.get() else 2
+    expectedLength = 4 if dihybridMode.get() else 2
 
     #Basic input length validation
-    if len(parent1) != expected_length or len(parent2) != expected_length:
+    if len(parent1) != expectedLength or len(parent2) != expectedLength:
         messagebox.showerror("Invalid Input", "Genotype must consist of the correct number of alleles.")
         return
     
@@ -183,18 +179,18 @@ def GeneratePunnetSquare():
         grid.append(row)
 
     #Count occurrences of each genotype and phenotype
-    phenotype_counts = {}
-    genotype_counts = {}
+    phenotypeCounts = {}
+    genotypeCounts = {}
     for genotype in square:
         phenotype = DeterminePhenotype(genotype, dominant1, recessive1,
                                         dominant2 if trait2 else None,
                                         recessive2 if trait2 else None,
                                         trait1, trait2)
-        phenotype_counts[phenotype] = phenotype_counts.get(phenotype, 0) + 1
-        genotype_counts[genotype] = genotype_counts.get(genotype, 0) + 1
+        phenotypeCounts[phenotype] = phenotypeCounts.get(phenotype, 0) + 1
+        genotypeCounts[genotype] = genotypeCounts.get(genotype, 0) + 1
 
     #Visualize the grid and results on the canvas
-    CreateVisualization(canvas, grid, parent1Gametes, parent2Gametes, phenotype_counts, genotype_counts, trait1, trait2)
+    CreateVisualization(canvas, grid, parent1Gametes, parent2Gametes, phenotypeCounts, genotypeCounts, trait1, trait2)
 
 #Function to check if the genotype is valid and properly ordered
 def IsValidOrder(genotype, dominant1, recessive1, dominant2=None, recessive2=None):
@@ -235,20 +231,20 @@ def DeterminePhenotype(genotype, dominant1, recessive1, dominant2=None, recessiv
     return phenotype1
 
 #Draws the Punnett square and trait statistics on a canvas
-def CreateVisualization(canvas, grid, parent1_gametes, parent2_gametes, phenotype_counts, genotype_counts, trait1, trait2):
+def CreateVisualization(canvas, grid, parent1Gametes, parent2Gametes, phenotypeCounts, genotypeCounts, trait1, trait2):
     
     #Clear the canvas before drawing new content
     canvas.delete("all")
     
     #Map each unique phenotype to a color (cycling through COLORS list)
-    phenotypeToColor = {p: COLORS[i % len(COLORS)] for i, p in enumerate(phenotype_counts)}
+    phenotypeToColor = {p: COLORS[i % len(COLORS)] for i, p in enumerate(phenotypeCounts)}
     
     #Size of each square in the grid
     cellSize = 70
     #Total width based on columns
-    gridWidth = len(parent2_gametes) * cellSize
+    gridWidth = len(parent2Gametes) * cellSize
     #Total height based on rows
-    gridHeight = len(parent1_gametes) * cellSize
+    gridHeight = len(parent1Gametes) * cellSize
     #Offset the grid so it's centered with space for the text
     offsetX = (canvas.winfo_width() - gridWidth - 600) // 2  
     offsetY = (canvas.winfo_height() - gridHeight) // 2
@@ -271,14 +267,14 @@ def CreateVisualization(canvas, grid, parent1_gametes, parent2_gametes, phenotyp
             canvas.create_text((x1 + x2) / 2, (y1 + y2) / 2, text=col, font=('Arial', 10, 'bold'))
 
     #Draw gametes labels along the top and left of the grid
-    for i, gamete in enumerate(parent1_gametes):
+    for i, gamete in enumerate(parent1Gametes):
         canvas.create_text(offsetX - 20, offsetY + i * cellSize + cellSize / 2, text=gamete, font=('Arial', 10, 'bold'))
-    for i, gamete in enumerate(parent2_gametes):
+    for i, gamete in enumerate(parent2Gametes):
         canvas.create_text(offsetX + i * cellSize + cellSize / 2, offsetY - 20, text=gamete, font=('Arial', 10, 'bold'))
     
     #Total number of genotypes/phenotypes
-    totalGenotypes = sum(genotype_counts.values())
-    totalPhenotypes = sum(phenotype_counts.values())
+    totalGenotypes = sum(genotypeCounts.values())
+    totalPhenotypes = sum(phenotypeCounts.values())
     
     #Where to start drawing phenotype/genotype info
     textOffsetX = offsetX + gridWidth + 30
@@ -289,11 +285,11 @@ def CreateVisualization(canvas, grid, parent1_gametes, parent2_gametes, phenotyp
     textOffsetY += 30
     
     #Width for phenotype text block
-    phenotype_column_width = 250  
-    genotype_column_offset_x = textOffsetX + phenotype_column_width + 50  # Space between columns for genotype
+    phenotypeColumnWidth = 250  
+    genotypeColumnOffset_X = textOffsetX + phenotypeColumnWidth + 50  # Space between columns for genotype
 
     #Show each phenotype with color, percentage, and ratio
-    for phenotype, count in phenotype_counts.items():
+    for phenotype, count in phenotypeCounts.items():
         percentage = (count / totalPhenotypes) * 100
         ratio = f"{count}/{totalPhenotypes}"
         color = phenotypeToColor.get(phenotype, "white")
@@ -305,17 +301,17 @@ def CreateVisualization(canvas, grid, parent1_gametes, parent2_gametes, phenotyp
         textOffsetY += 25
 
     #Now display genotypes side by side with phenotypes
-    canvas.create_text(genotype_column_offset_x, offsetY, text="Genotype Percentages & Ratios:", anchor="w", font=('Arial', 12, 'bold'))
+    canvas.create_text(genotypeColumnOffset_X, offsetY, text="Genotype Percentages & Ratios:", anchor="w", font=('Arial', 12, 'bold'))
     textOffsetY = offsetY + 30 
 
     #Sort genotypes by their percentage in descending order
-    sorted_genotypes = sorted(genotype_counts.items(), key=lambda x: (x[1] / totalGenotypes) * 100, reverse=True)
+    sortedGenotypes = sorted(genotypeCounts.items(), key=lambda x: (x[1] / totalGenotypes) * 100, reverse=True)
 
     #Display sorted genotypes
-    for genotype, count in sorted_genotypes:
+    for genotype, count in sortedGenotypes:
         percentage = (count / totalGenotypes) * 100
         ratio = f"{count}/{totalGenotypes}"
-        canvas.create_text(genotype_column_offset_x + 25, textOffsetY, text=f"{genotype}: {percentage:.1f}% ({ratio})", anchor="w", font=('Arial', 10))
+        canvas.create_text(genotypeColumnOffset_X + 25, textOffsetY, text=f"{genotype}: {percentage:.1f}% ({ratio})", anchor="w", font=('Arial', 10))
         textOffsetY += 25
 
 #Updates the label with descriptions of the selected traits, showing
@@ -385,7 +381,7 @@ def ToggleMode():
 root = tk.Tk()
 root.title("Trait Inheritance Calculator")
 root.geometry("1100x750")
-root.configure(bg="#f0f4f7")
+root.configure(bg="lightblue")
 root.resizable(False, False)
 
 # Style configuration for ttk widgets
@@ -395,12 +391,12 @@ style.configure('TButton', font=('Arial', 11), padding=5)
 style.configure('TCombobox', font=('Arial', 11))
 
 #Create a frame to hold all the input widgets
-frame = tk.Frame(root, bg="#f0f4f7")
+frame = tk.Frame(root, bg="lightblue")
 frame.pack(pady=10)
 
 # --- TRAIT 1 ---
 #Label for Trait 1
-tk.Label(frame, text="Trait 1:", bg="#f0f4f7", font=('Arial', 12, 'bold')).grid(row=0, column=0, padx=5, sticky='e')
+tk.Label(frame, text="Trait 1:", bg="lightblue", font=('Arial', 12, 'bold')).grid(row=0, column=0, padx=5, sticky='e')
 #Dropdown for Trait 1 selection
 trait1Var = tk.StringVar(value=list(TRAITS.keys())[0])
 trait1Dropdown = ttk.Combobox(frame, textvariable=trait1Var, values=list(TRAITS.keys()), state="readonly")
@@ -409,7 +405,7 @@ trait1Dropdown.bind("<<ComboboxSelected>>", UpdateTraitInfo)
 
 # --- TRAIT 2 ---
 #Label for Trait 2
-tk.Label(frame, text="Trait 2:", bg="#f0f4f7", font=('Arial', 12, 'bold')).grid(row=0, column=2, padx=5, sticky='e')
+tk.Label(frame, text="Trait 2:", bg="lightblue", font=('Arial', 12, 'bold')).grid(row=0, column=2, padx=5, sticky='e')
 #Dropdown for Trait 2 selection (initially disabled unless dihybrid mode is enabled)
 trait2Var = tk.StringVar(value=list(TRAITS.keys())[1])
 trait2Dropdown = ttk.Combobox(frame, textvariable=trait2Var, values=list(TRAITS.keys()), state="disabled")
@@ -418,7 +414,7 @@ trait2Dropdown.bind("<<ComboboxSelected>>", UpdateTraitInfo)
 
 # --- PARENT 1 GENOTYPE ---
 #Label for Parent 1 genotype input
-tk.Label(frame, text="Parent 1 Genotype:", bg="#f0f4f7", font=('Arial', 12, 'bold')).grid(row=1, column=0, padx=5, sticky='e')
+tk.Label(frame, text="Parent 1 Genotype:", bg="lightblue", font=('Arial', 12, 'bold')).grid(row=1, column=0, padx=5, sticky='e')
 #Entry for Parent 1 genotype (default is "Bb")
 parent1Entry = tk.Entry(frame, width=10, font=('Arial', 11))
 parent1Entry.grid(row=1, column=1, padx=5)
@@ -426,7 +422,7 @@ parent1Entry.insert(0, "Bb")
 
 # --- PARENT 2 GENOTYPE ---
 #Label for Parent 2 genotype input
-tk.Label(frame, text="Parent 2 Genotype:", bg="#f0f4f7", font=('Arial', 12, 'bold')).grid(row=1, column=2, padx=5, sticky='e')
+tk.Label(frame, text="Parent 2 Genotype:", bg="lightblue", font=('Arial', 12, 'bold')).grid(row=1, column=2, padx=5, sticky='e')
 #Entry for Parent 2 genotype (default is "Bb")
 parent2Entry = tk.Entry(frame, width=10, font=('Arial', 11))
 parent2Entry.grid(row=1, column=3, padx=5)
@@ -435,17 +431,17 @@ parent2Entry.insert(0, "Bb")
 # --- DIHYBRID MODE CHECKBOX ---
 #Checkbox to enable/disable dihybrid cross (two traits at once)
 dihybridMode= tk.BooleanVar(value=False)
-tk.Checkbutton(frame, text="Enable Dihybrid Cross", variable=dihybridMode, bg="#f0f4f7", font=('Arial', 11), command=ToggleMode).grid(row=2, column=0, columnspan=4, pady=5)
+tk.Checkbutton(frame, text="Enable Dihybrid Cross", variable=dihybridMode, bg="lightblue", font=('Arial', 11), command=ToggleMode).grid(row=2, column=0, columnspan=4, pady=5)
 
 # --- TRAIT INFO DISPLAY ---
 #Label to show dominant/recessive info for selected traits
-traitInfoLabel = tk.Label(root, text="", bg="#f0f4f7", font=('Arial', 11))
+traitInfoLabel = tk.Label(root, text="", bg="lightblue", font=('Arial', 11))
 traitInfoLabel.pack(pady=5)
 UpdateTraitInfo() #Show info based on default selections
 
 # --- BUTTONS ---
 #Frame to group action buttons
-buttonFrame = tk.Frame(root, bg="#f0f4f7")
+buttonFrame = tk.Frame(root, bg="lightblue")
 buttonFrame.pack(pady=10)
 
 #Button to generate Punnett square
